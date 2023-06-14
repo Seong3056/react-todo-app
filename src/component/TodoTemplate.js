@@ -66,13 +66,31 @@ const TodoTemplate = () => {
 
     setTodos(todos.filter((todo) => todo.id !== id));
   };
+
+  //할일 체크 처리함수
+  const checkTodo = (id) => {
+    console.log("check한 todo Id:", id);
+    setTodos(
+      todos.map((todo) =>
+        todo.id === id ? { ...todo, done: !todo.done } : todo
+      )
+    );
+  };
+
+  //할일 카운트 함수
+  const todoCount = () => {
+    return todos.filter((todo) => !todo.done).length;
+  };
+
+  let count = todoCount();
   useEffect(() => {
-    console.log(todos);
-  }, [todos]);
+    // console.log(todos);
+    // console.log(count);
+  }, [todos, count]);
   return (
     <div class="TodoTemplate">
-      <TodoHeader />
-      <TodoMain todoList={todos} remove={removeTodo} />
+      <TodoHeader count={count} />
+      <TodoMain todoList={todos} remove={removeTodo} check={checkTodo} />
       <TodoInput addTodo={addTodo} />
     </div>
   );
