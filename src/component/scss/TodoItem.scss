@@ -1,0 +1,62 @@
+
+@mixin content-center {
+    display: flex;
+        justify-content: center;
+        align-items: center;
+}
+
+.todo-list-item{
+    
+    display: flex;
+    align-items: center;    
+    padding: 12px 0;
+    
+    &:hover .remove{
+        display: flex;
+    }
+    
+
+    .check-circle{
+        width: 32px;
+        height: 32px;
+        border: 1px solid #9da1a7;
+        border-radius: 50%;        
+        font-size: 24px;
+        margin-right: 20px;
+        cursor: pointer;
+        svg{
+            display: none;
+        }
+        @include content-center();
+        &.active{
+            border: 1px solid #38d9a9;
+            color: #38d9a9;
+            svg{
+                display: flex;
+            }
+        }
+    }
+    
+    .text {
+        font-size: 21px;
+        // background-color: tomato;
+        color: #495057;
+        flex: 1;
+        &.finish{
+            color: #919396;
+            text-decoration: line-through;
+        }
+    }
+    .remove {
+        color: red;
+        font-size: 28px;
+        
+        @include content-center();
+        display: none;
+        cursor: pointer;
+       &:hover svg{
+        opacity: 0.6;
+       }
+    }
+    
+}
