@@ -1,15 +1,22 @@
-import React from "react";
+import React, { useState } from "react";
 import "./scss/TodoItem.scss";
 import { MdDone, MdDelete } from "react-icons/md";
+import cn from "classnames";
 
-const Todoitem = () => {
+const Todoitem = ({ item, remove }) => {
+  const { id, title, done } = item;
+
+  const [state, setState] = useState(done);
+  const onToggle = () => {
+    setState(!state);
+  };
   return (
     <li className="todo-list-item">
-      <div className="check-circle active">
-        <MdDone />
+      <div className={cn("check-circle", { active: state })} onClick={onToggle}>
+        {state && <MdDone />}
       </div>
-      <span className="text finish">할일~~</span>
-      <div className="remove">
+      <span className={cn("text", { finish: state })}>{title}</span>
+      <div className="remove" onClick={() => remove(id)}>
         <MdDelete />
       </div>
     </li>

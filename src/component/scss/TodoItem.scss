@@ -24,16 +24,12 @@
         font-size: 24px;
         margin-right: 20px;
         cursor: pointer;
-        svg{
-            display: none;
-        }
+       
         @include content-center();
         &.active{
             border: 1px solid #38d9a9;
             color: #38d9a9;
-            svg{
-                display: flex;
-            }
+            
         }
     }
     
