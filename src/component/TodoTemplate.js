@@ -4,33 +4,14 @@ import TodoMain from "./TodoMain";
 import TodoInput from "./TodoInput";
 
 import "./scss/TodoTemplate.scss";
+import { json } from "react-router-dom";
 
 const TodoTemplate = () => {
   // 서버에 할일 목록(json)을 요청(fetch)해서 받아와야 함
+  const API_BASE_URL = "http://localhost:8181/api/todos";
 
   //todos 배열을 상태관리
-  const [todos, setTodos] = useState([
-    {
-      id: 1,
-      title: "아침 산책하기",
-      done: false,
-    },
-    {
-      id: 2,
-      title: "오늘 주간신문읽기",
-      done: false,
-    },
-    {
-      id: 3,
-      title: "강아지 밥주기",
-      done: true,
-    },
-    {
-      id: 4,
-      title: "택배 받아가기",
-      done: false,
-    },
-  ]);
+  const [todos, setTodos] = useState([]);
 
   // todoInput에게 todoText를 받아오는 함수
   // 자식 컴포넌트가 부모 컴포넌트에게 데이터를 전달할 때는
@@ -41,9 +22,7 @@ const TodoTemplate = () => {
   const addTodo = (todoText) => {
     console.log("할일 정보:", todoText);
     const newTodo = {
-      id: todos[todos.length - 1].id === 0 ? 1 : todos[todos.length - 1].id + 1,
       title: todoText,
-      done: false,
     };
     // todos.push(newTodo);
 
@@ -54,8 +33,15 @@ const TodoTemplate = () => {
     //새로운 상태를 만들어서 변경해야 한다.
     // const copyTodos = todos.slice();
     // copyTodos.push(newTodo);
-
-    setTodos([...todos, newTodo]);
+    fetch(API_BASE_URL, {
+      method: "post",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(newTodo),
+    })
+      .then((rs) => rs.json())
+      .then((json) => {
+        setTodos(json.todos);
+      });
   };
   //할 일 삭제 처리 함수
   const removeTodo = (id) => {
@@ -63,18 +49,40 @@ const TodoTemplate = () => {
 
     //주어진 배열의 값들을 순회하여 조건에 맞는 요소들만 모아서
     //새로운 배열로 리턴해 주는 함수
+    fetch(`${API_BASE_URL}/${id}`, {
+      method: "delete",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        id: id,
+      }),
+    })
+      .then((rs) => rs.json())
+      .then((json) => {
+        setTodos(json.todos);
+      });
 
     setTodos(todos.filter((todo) => todo.id !== id));
   };
 
   //할일 체크 처리함수
-  const checkTodo = (id) => {
-    console.log("check한 todo Id:", id);
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, done: !todo.done } : todo
-      )
-    );
+  const checkTodo = (id, status) => {
+    console.log("check한 todo Id:", id, status);
+
+    const check = {
+      id: id,
+      done: !status,
+    };
+
+    fetch(API_BASE_URL, {
+      method: "put",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify(check),
+    })
+      .then((rs) => rs.json())
+      .then((json) => {
+        console.log(json.todos);
+        setTodos(json.todos);
+      });
   };
 
   //할일 카운트 함수
@@ -84,9 +92,14 @@ const TodoTemplate = () => {
 
   let count = todoCount();
   useEffect(() => {
-    // console.log(todos);
-    // console.log(count);
-  }, [todos, count]);
+    //페이지가 렌더링 됨과 동시에 할 일 목록을 요청해서 뿌려준다.
+    fetch(API_BASE_URL)
+      .then((rs) => rs.json())
+      .then((json) => {
+        console.log(json.todos);
+        setTodos(json.todos);
+      });
+  }, [count]);
   return (
     <div class="TodoTemplate">
       <TodoHeader count={count} />
